@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package orderbook.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/tam/tam-protos/gen/go/orderbook/v1;orderbookv1";
+
+// OrderBookService manages bet orders and settlements
+service OrderBookService {
+    // Place a bet order
+    rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponse);
+
+    // Cancel a bet order (saga compensation)
+    rpc CancelBet(CancelBetRequest) returns (CancelBetResponse);
+
+    // Settle a bet (win/loss/push)
+    rpc SettleBet(SettleBetRequest) returns (SettleBetResponse);
+
+    // Get bet status
+    rpc GetBetStatus(GetBetStatusRequest) returns (GetBetStatusResponse);
+}
+
+// Request to place a bet
+message PlaceBetRequest {
+    string user_id = 1;
+    string event_id = 2;
+    string bet_type = 3;
+    string selection = 4;
+    string amount = 5;                  // Decimal as string
+    string reservation_id = 6;          // From wallet-service reservation
+    string saga_id = 7;                 // Distributed transaction ID
+    string idempotency_key = 8;         // CRITICAL: For idempotency
+}
+
+// Response from placing bet
+message PlaceBetResponse {
+    string order_id = 1;
+    string status = 2;
+    google.protobuf.Timestamp created_at = 3;
+}
+
+// Request to cancel a bet
+message CancelBetRequest {
+    string order_id = 1;
+    string saga_id = 2;
+    string idempotency_key = 3;         // CRITICAL: For idempotency
+}
+
+// Response from canceling bet
+message CancelBetResponse {
+    string status = 1;
+}
+
+// Request to settle a bet
+message SettleBetRequest {
+    string order_id = 1;
+    string result = 2;              // "win", "loss", "push"
+    string payout_amount = 3;       // Decimal as string (for wins)
+    string idempotency_key = 4;     // CRITICAL: For idempotency
+}
+
+// Response from settling bet
+message SettleBetResponse {
+    string transaction_id = 1;
+    string status = 2;
+}
+
+// Request to get bet status
+message GetBetStatusRequest {
+    string order_id = 1;
+}
+
+// Response with bet status
+message GetBetStatusResponse {
+    string order_id = 1;
+    string status = 2;              // "active", "settled_win", "settled_loss", "cancelled"
+    string amount = 3;              // Decimal as string
+    string potential_payout = 4;    // Decimal as string
+    google.protobuf.Timestamp created_at = 5;
+}

@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package wallet.v1;
+
+option go_package = "github.com/tam/tam-protos/gen/go/wallet/v1;walletv1";
+
+// WalletService manages user wallet balances, reservations, and transactions
+// CRITICAL: Handles real money - zero tolerance for data loss or inconsistency
+service WalletService {
+    // Get user balance information
+    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+
+    // Reserve balance for a bet (2PC-style reservation)
+    // CRITICAL: Must be idempotent - uses idempotency_key
+    rpc ReserveBalance(ReserveBalanceRequest) returns (ReserveBalanceResponse);
+
+    // Commit a reservation (final step - deduct balance)
+    // CRITICAL: Must be idempotent - uses idempotency_key
+    rpc CommitReservation(CommitReservationRequest) returns (CommitReservationResponse);
+
+    // Cancel a reservation (compensation/rollback)
+    // CRITICAL: Must be idempotent - uses idempotency_key
+    rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse);
+
+    // Credit balance (for bet winnings, refunds, etc.)
+    // CRITICAL: Must be idempotent - uses idempotency_key
+    rpc CreditBalance(CreditBalanceRequest) returns (CreditBalanceResponse);
+
+    // Get transaction history for a user
+    rpc GetTransactionHistory(GetTransactionHistoryRequest) returns (GetTransactionHistoryResponse);
+}
+
+// Request to get user balance
+message GetBalanceRequest {
+    string user_id = 1;
+}
+
+// Response with user balance information
+message GetBalanceResponse {
+    string user_id = 1;
+    string balance = 2;          // Decimal as string (e.g., "500.00")
+    string reserved = 3;         // Amount currently reserved (e.g., "100.00")
+    string available = 4;        // Available balance (balance - reserved)
+    string currency = 5;         // e.g., "EUR"
+}
+
+// Request to reserve balance (start of 2PC)
+message ReserveBalanceRequest {
+    string user_id = 1;
+    string amount = 2;           // Decimal as string
+    string saga_id = 3;          // Distributed transaction ID
+    string idempotency_key = 4;  // CRITICAL: For idempotency
+}
+
+// Response from balance reservation
+message ReserveBalanceResponse {
+    string reservation_id = 1;   // UUID for this reservation
+    string status = 2;           // e.g., "PENDING"
+}
+
+// Request to commit a reservation (complete 2PC)
+message CommitReservationRequest {
+    string reservation_id = 1;   // From ReserveBalanceResponse
+    string order_id = 2;         // Associated order/bet ID
+    string saga_id = 3;          // Distributed transaction ID
+    string idempotency_key = 4;  // CRITICAL: For idempotency
+}
+
+// Response from committing reservation
+message CommitReservationResponse {
+    string status = 1;           // e.g., "COMMITTED"
+}
+
+// Request to cancel a reservation (rollback 2PC)
+message CancelReservationRequest {
+    string reservation_id = 1;   // From ReserveBalanceResponse
+    string saga_id = 2;          // Distributed transaction ID
+    string idempotency_key = 3;  // CRITICAL: For idempotency
+}
+
+// Response from canceling reservation
+message CancelReservationResponse {
+    string status = 1;           // e.g., "CANCELLED"
+}
+
+// Request to credit user balance
+message CreditBalanceRequest {
+    string user_id = 1;
+    string amount = 2;               // Decimal as string
+    string transaction_type = 3;     // e.g., "bet_win", "refund"
+    string reference_id = 4;         // Order ID or other reference
+    string description = 5;          // Human-readable description
+    string idempotency_key = 6;      // CRITICAL: For idempotency
+    string saga_id = 7;              // Distributed transaction ID - CRITICAL for saga tracking
+}
+
+// Response from crediting balance
+message CreditBalanceResponse {
+    string transaction_id = 1;
+    string status = 2;
+}
+
+// Request to get transaction history
+message GetTransactionHistoryRequest {
+    string user_id = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+}
+
+// Response with transaction history
+message GetTransactionHistoryResponse {
+    repeated Transaction transactions = 1;
+    int32 total_count = 2;
+}
+
+// Transaction record (immutable audit log)
+message Transaction {
+    string id = 1;
+    string user_id = 2;
+    string amount = 3;               // Decimal as string
+    string type = 4;                 // "DEBIT", "CREDIT", "RESERVATION", "REFUND"
+    string status = 5;               // "PENDING", "COMPLETED", "FAILED", "CANCELLED"
+    string balance_before = 6;       // Decimal as string
+    string balance_after = 7;        // Decimal as string
+    string order_id = 8;
+    string reservation_id = 9;
+    string saga_id = 10;
+    string created_at = 11;          // ISO8601 timestamp string
+}

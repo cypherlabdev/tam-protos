@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package order.v1;
+
+option go_package = "github.com/tam/tam-protos/gen/go/order/v1;orderv1";
+
+// ValidatorService orchestrates the bet placement saga using Temporal workflows
+// This is a stateless service - Temporal handles all state persistence
+service ValidatorService {
+    // Initiate a bet placement saga (triggers Temporal workflow)
+    rpc PlaceBet(PlaceBetRequest) returns (PlaceBetResponse);
+}
+
+// Request to place a bet (triggers saga workflow)
+message PlaceBetRequest {
+    string user_id = 1;
+    string event_id = 2;            // Sporting event ID
+    string bet_type = 3;            // e.g., "moneyline", "spread", "total"
+    string selection = 4;           // e.g., "lakers_win", "celtics_win"
+    string amount = 5;              // Decimal as string
+    string idempotency_key = 6;     // CRITICAL: For idempotency
+}
+
+// Response from bet placement saga
+message PlaceBetResponse {
+    string saga_id = 1;             // Workflow execution ID
+    string order_id = 2;            // Bet/order ID (if successful)
+    string status = 3;              // "processing", "success", "failed"
+}

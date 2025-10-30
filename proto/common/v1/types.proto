@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/tam/tam-protos/gen/go/common/v1;commonv1";
+
+// Money type for decimal representation
+// Note: Using string for decimal to avoid floating point precision issues
+message Money {
+    string amount = 1;              // Decimal as string (e.g., "100.50")
+    string currency = 2;            // ISO currency code (e.g., "EUR", "USD")
+}
+
+// Timestamp wrapper (prefer google.protobuf.Timestamp for standard use)
+message Timestamp {
+    int64 seconds = 1;
+    int32 nanos = 2;
+}
+
+// Common status enum
+enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_PENDING = 1;
+    STATUS_COMPLETED = 2;
+    STATUS_FAILED = 3;
+    STATUS_CANCELLED = 4;
+}
+
+// Transaction type enum
+enum TransactionType {
+    TRANSACTION_TYPE_UNSPECIFIED = 0;
+    TRANSACTION_TYPE_DEBIT = 1;
+    TRANSACTION_TYPE_CREDIT = 2;
+    TRANSACTION_TYPE_RESERVATION = 3;
+    TRANSACTION_TYPE_REFUND = 4;
+}
+
+// Bet status enum
+enum BetStatus {
+    BET_STATUS_UNSPECIFIED = 0;
+    BET_STATUS_ACTIVE = 1;
+    BET_STATUS_SETTLED_WIN = 2;
+    BET_STATUS_SETTLED_LOSS = 3;
+    BET_STATUS_SETTLED_PUSH = 4;
+    BET_STATUS_CANCELLED = 5;
+}
+
+// Order status enum
+enum OrderStatus {
+    ORDER_STATUS_UNSPECIFIED = 0;
+    ORDER_STATUS_ACTIVE = 1;
+    ORDER_STATUS_SETTLED = 2;
+    ORDER_STATUS_CANCELLED = 3;
+}
+
+// Risk level enum
+enum RiskLevel {
+    RISK_LEVEL_UNSPECIFIED = 0;
+    RISK_LEVEL_LOW = 1;
+    RISK_LEVEL_MEDIUM = 2;
+    RISK_LEVEL_HIGH = 3;
+}
+
+// Reservation status enum
+enum ReservationStatus {
+    RESERVATION_STATUS_UNSPECIFIED = 0;
+    RESERVATION_STATUS_PENDING = 1;
+    RESERVATION_STATUS_COMMITTED = 2;
+    RESERVATION_STATUS_CANCELLED = 3;
+    RESERVATION_STATUS_EXPIRED = 4;
+}

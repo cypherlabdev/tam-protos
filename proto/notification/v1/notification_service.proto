@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package notification.v1;
+
+option go_package = "github.com/tam/tam-protos/gen/go/notification/v1;notificationv1";
+
+// NotificationService handles user notifications
+// Primarily event-driven (consumes from NATS/Kafka)
+// This service is optional for direct notifications
+service NotificationService {
+    // Send notification directly (optional - mainly event-driven)
+    rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse);
+
+    // Get notification history for a user
+    rpc GetNotificationHistory(GetNotificationHistoryRequest) returns (GetNotificationHistoryResponse);
+}
+
+// Request to send a notification
+message SendNotificationRequest {
+    string user_id = 1;
+    string type = 2;                // "email", "push", "sms"
+    string title = 3;
+    string message = 4;
+    string idempotency_key = 5;     // CRITICAL: For idempotency
+}
+
+// Response from sending notification
+message SendNotificationResponse {
+    string notification_id = 1;
+    string status = 2;
+}
+
+// Request to get notification history
+message GetNotificationHistoryRequest {
+    string user_id = 1;
+    int32 offset = 2;
+    int32 limit = 3;
+}
+
+// Response with notification history
+message GetNotificationHistoryResponse {
+    repeated Notification notifications = 1;
+    int32 total_count = 2;
+}
+
+// Notification record
+message Notification {
+    string id = 1;
+    string user_id = 2;
+    string type = 3;
+    string title = 4;
+    string message = 5;
+    string status = 6;              // "sent", "failed", "pending"
+    string created_at = 7;
+}

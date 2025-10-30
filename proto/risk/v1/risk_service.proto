@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package risk.v1;
+
+option go_package = "github.com/tam/tam-protos/gen/go/risk/v1;riskv1";
+
+// RiskService provides fraud detection and risk scoring
+service RiskService {
+    // Check risk level for a bet
+    rpc CheckBet(CheckBetRequest) returns (CheckBetResponse);
+
+    // Get user risk profile
+    rpc GetRiskProfile(GetRiskProfileRequest) returns (GetRiskProfileResponse);
+}
+
+// Request to check bet risk
+message CheckBetRequest {
+    string user_id = 1;
+    string amount = 2;              // Decimal as string
+    string event_id = 3;
+    string bet_type = 4;
+}
+
+// Response with risk assessment
+message CheckBetResponse {
+    string risk_level = 1;          // "low", "medium", "high"
+    double risk_score = 2;          // 0.0 to 1.0
+    bool approved = 3;
+    string reason = 4;              // Optional reason if not approved
+}
+
+// Request to get user risk profile
+message GetRiskProfileRequest {
+    string user_id = 1;
+}
+
+// Response with user risk profile
+message GetRiskProfileResponse {
+    RiskProfile profile = 1;
+}
+
+// User risk profile
+message RiskProfile {
+    string user_id = 1;
+    string risk_level = 2;
+    string max_bet_amount = 3;      // Decimal as string
+    int32 bets_count_today = 4;
+    string created_at = 5;
+    string updated_at = 6;
+}
