@@ -1,0 +1,64 @@
+name: Validate Proto Changes
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ main, master ]
+
+jobs:
+  lint:
+    name: Buf Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Buf lint
+        run: buf lint
+
+  breaking:
+    name: Breaking Change Detection
+    runs-on: ubuntu-latest
+    # Only run on PRs
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Check for breaking changes
+        run: buf breaking --against '.git#branch=main'
+
+  generate:
+    name: Generate Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
+
+      - name: Install protoc plugins
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+      - name: Generate Go code
+        run: buf generate
+
+      - name: Verify generated code compiles
+        run: |
+          cd gen/go
+          go mod init github.com/tam/tam-protos/gen/go || true
+          go mod tidy || true

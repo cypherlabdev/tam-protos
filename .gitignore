@@ -1,0 +1,16 @@
+# Generated code
+gen/
+
+# Buf lock file (can be regenerated)
+buf.lock
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
