@@ -31,22 +31,17 @@
 
 ## Existing Asana Tickets
 
-### ⚠️ NO MAIN TICKET EXISTS
-
-There is currently **no Asana ticket** tracking the tam-protos repository work. This is a foundational service that all other services depend on.
-
-**Recommendation**: Create a parent epic ticket for Protocol Buffer Infrastructure
-
-## Tickets to Create in Asana
-
-### 1. [NEW] Protocol Buffer Infrastructure (Epic)
-**Proposed Priority**: P0 (Foundation)
+### 1. Protocol Buffer Infrastructure (Epic)
+**Task ID**: 1211847087657094
+**ENG**: ENG-244
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847087657094
+**Priority**: Not set (Foundation Epic)
 **Type**: feature
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, Infrastructure, tam-protos
 **Dependencies**: None (foundation service)
 
-**Rationale**: tam-protos is the foundational service that all other microservices depend on for gRPC communication. It requires an Asana ticket to track ongoing maintenance, versioning, and breaking change management.
+**Rationale**: tam-protos is the foundational service that all other microservices depend on for gRPC communication. Tracks ongoing maintenance, versioning, and breaking change management.
 
 **Acceptance Criteria**:
 - [x] Proto definitions for all 7 core services
@@ -65,8 +60,11 @@ There is currently **no Asana ticket** tracking the tam-protos repository work. 
 
 ---
 
-### 2. [NEW] Fix Branding and Module Path Consistency
-**Proposed Priority**: P1
+### 2. Fix Branding and Module Path Consistency
+**Task ID**: 1211847095651079
+**ENG**: ENG-245
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847095651079
+**Priority**: P1
 **Type**: bug
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, tam-protos
@@ -90,12 +88,15 @@ There is currently **no Asana ticket** tracking the tam-protos repository work. 
 
 ---
 
-### 3. [NEW] Python Proto Code Generation
-**Proposed Priority**: P2
+### 3. Python Proto Code Generation
+**Task ID**: 1211847250607194
+**ENG**: ENG-246
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847250607194
+**Priority**: P2
 **Type**: feature
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, tam-protos
-**Dependencies**: [ENG-TBD] Protocol Buffer Infrastructure
+**Dependencies**: [ENG-244] Protocol Buffer Infrastructure
 
 **Rationale**: risk-analyzer-service and reporting-service are Python services (FastAPI) that need to communicate with Go services via gRPC. Python proto generation is required for these services.
 
@@ -122,12 +123,15 @@ There is currently **no Asana ticket** tracking the tam-protos repository work. 
 
 ---
 
-### 4. [NEW] Event Message Schema Definitions
-**Proposed Priority**: P1
+### 4. Event Message Schema Definitions
+**Task ID**: 1211847314011770
+**ENG**: ENG-247
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847314011770
+**Priority**: P1
 **Type**: feature
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, tam-protos, Events
-**Dependencies**: [ENG-TBD] Protocol Buffer Infrastructure
+**Dependencies**: [ENG-244] Protocol Buffer Infrastructure
 
 **Rationale**: Multiple services publish events to Kafka/NATS (user login, order placed, bet settled, etc.) but currently use custom JSON structures. Standardized proto definitions ensure type safety and schema evolution.
 
@@ -148,8 +152,11 @@ There is currently **no Asana ticket** tracking the tam-protos repository work. 
 
 ---
 
-### 5. [NEW] Odds Service Proto Definitions
-**Proposed Priority**: P2
+### 5. Odds Service Proto Definitions
+**Task ID**: 1211847322590339
+**ENG**: ENG-248
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847322590339
+**Priority**: P2
 **Type**: feature
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, tam-protos, Odds Management
@@ -187,12 +194,15 @@ service OddsOptimizerService {
 
 ---
 
-### 6. [NEW] Proto Versioning Documentation
-**Proposed Priority**: P2
+### 6. Proto Versioning Documentation
+**Task ID**: 1211847319486482
+**ENG**: ENG-249
+**URL**: https://app.asana.com/1/1211160221335348/project/1211254851871080/task/1211847319486482
+**Priority**: P2
 **Type**: documentation
 **Assignee**: sj@cypherlab.tech
 **Labels**: Backend, tam-protos, Documentation
-**Dependencies**: [ENG-TBD] Protocol Buffer Infrastructure
+**Dependencies**: [ENG-244] Protocol Buffer Infrastructure
 
 **Rationale**: docs/VERSIONING.md exists but needs comprehensive guidelines for proto evolution, breaking changes, and migration strategies for a production betting platform.
 
