@@ -1,4 +1,7 @@
 version: v1
+build:
+  roots:
+    - proto
 breaking:
   use:
     - FILE        # Detect file-level breaking changes
