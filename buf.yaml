@@ -1,6 +1,8 @@
 version: v2
 modules:
   - path: proto
+deps:
+  - buf.build/googleapis/googleapis  # For google/api/annotations.proto
 breaking:
   use:
     - FILE        # Detect file-level breaking changes
