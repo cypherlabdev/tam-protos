@@ -1,10 +1,12 @@
-version: v1
+version: v2
+modules:
+  - path: proto
 breaking:
   use:
     - FILE        # Detect file-level breaking changes
 lint:
   use:
-    - DEFAULT     # Default linting rules
+    - STANDARD     # Default linting rules
   enum_zero_value_suffix: _UNSPECIFIED
   rpc_allow_same_request_response: false
   rpc_allow_google_protobuf_empty_requests: true

@@ -1,5 +1,5 @@
 # Generated code
-gen/
+#gen/
 
 # Buf lock file (can be regenerated)
 buf.lock
