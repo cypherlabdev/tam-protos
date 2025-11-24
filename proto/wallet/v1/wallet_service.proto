@@ -2,32 +2,62 @@ syntax = "proto3";
 
 package wallet.v1;
 
+import "google/api/annotations.proto";
+
 option go_package = "github.com/tam/tam-protos/gen/go/wallet/v1;walletv1";
 
 // WalletService manages user wallet balances, reservations, and transactions
 // CRITICAL: Handles real money - zero tolerance for data loss or inconsistency
 service WalletService {
     // Get user balance information
-    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse);
+    rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/wallets/{user_id}/balance"
+        };
+    }
 
     // Reserve balance for a bet (2PC-style reservation)
     // CRITICAL: Must be idempotent - uses idempotency_key
-    rpc ReserveBalance(ReserveBalanceRequest) returns (ReserveBalanceResponse);
+    rpc ReserveBalance(ReserveBalanceRequest) returns (ReserveBalanceResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/wallets/reserve"
+            body: "*"
+        };
+    }
 
     // Commit a reservation (final step - deduct balance)
     // CRITICAL: Must be idempotent - uses idempotency_key
-    rpc CommitReservation(CommitReservationRequest) returns (CommitReservationResponse);
+    rpc CommitReservation(CommitReservationRequest) returns (CommitReservationResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/reservations/{reservation_id}/commit"
+            body: "*"
+        };
+    }
 
     // Cancel a reservation (compensation/rollback)
     // CRITICAL: Must be idempotent - uses idempotency_key
-    rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse);
+    rpc CancelReservation(CancelReservationRequest) returns (CancelReservationResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/reservations/{reservation_id}/cancel"
+            body: "*"
+        };
+    }
 
     // Credit balance (for bet winnings, refunds, etc.)
     // CRITICAL: Must be idempotent - uses idempotency_key
-    rpc CreditBalance(CreditBalanceRequest) returns (CreditBalanceResponse);
+    rpc CreditBalance(CreditBalanceRequest) returns (CreditBalanceResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/wallets/credit"
+            body: "*"
+        };
+    }
 
     // Get transaction history for a user
-    rpc GetTransactionHistory(GetTransactionHistoryRequest) returns (GetTransactionHistoryResponse);
+    rpc GetTransactionHistory(GetTransactionHistoryRequest) returns (GetTransactionHistoryResponse) {
+        option (google.api.http) = {
+            get: "/api/v1/wallets/{user_id}/transactions"
+        };
+    }
 }
 
 // Request to get user balance

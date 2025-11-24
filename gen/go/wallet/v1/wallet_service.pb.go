@@ -7,6 +7,7 @@
 package walletv1
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -874,7 +875,7 @@ var File_wallet_v1_wallet_service_proto protoreflect.FileDescriptor
 
 const file_wallet_v1_wallet_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1ewallet/v1/wallet_service.proto\x12\twallet.v1\",\n" +
+	"\x1ewallet/v1/wallet_service.proto\x12\twallet.v1\x1a\x1cgoogle/api/annotations.proto\",\n" +
 	"\x11GetBalanceRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\"\x9d\x01\n" +
 	"\x12GetBalanceResponse\x12\x17\n" +
@@ -936,15 +937,15 @@ const file_wallet_v1_wallet_service_proto_rawDesc = "" +
 	"\asaga_id\x18\n" +
 	" \x01(\tR\x06sagaId\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\v \x01(\tR\tcreatedAt2\xb1\x04\n" +
-	"\rWalletService\x12I\n" +
+	"created_at\x18\v \x01(\tR\tcreatedAt2\xc8\x06\n" +
+	"\rWalletService\x12t\n" +
 	"\n" +
-	"GetBalance\x12\x1c.wallet.v1.GetBalanceRequest\x1a\x1d.wallet.v1.GetBalanceResponse\x12U\n" +
-	"\x0eReserveBalance\x12 .wallet.v1.ReserveBalanceRequest\x1a!.wallet.v1.ReserveBalanceResponse\x12^\n" +
-	"\x11CommitReservation\x12#.wallet.v1.CommitReservationRequest\x1a$.wallet.v1.CommitReservationResponse\x12^\n" +
-	"\x11CancelReservation\x12#.wallet.v1.CancelReservationRequest\x1a$.wallet.v1.CancelReservationResponse\x12R\n" +
-	"\rCreditBalance\x12\x1f.wallet.v1.CreditBalanceRequest\x1a .wallet.v1.CreditBalanceResponse\x12j\n" +
-	"\x15GetTransactionHistory\x12'.wallet.v1.GetTransactionHistoryRequest\x1a(.wallet.v1.GetTransactionHistoryResponseB5Z3github.com/tam/tam-protos/gen/go/wallet/v1;walletv1b\x06proto3"
+	"GetBalance\x12\x1c.wallet.v1.GetBalanceRequest\x1a\x1d.wallet.v1.GetBalanceResponse\")\x82\xd3\xe4\x93\x02#\x12!/api/v1/wallets/{user_id}/balance\x12y\n" +
+	"\x0eReserveBalance\x12 .wallet.v1.ReserveBalanceRequest\x1a!.wallet.v1.ReserveBalanceResponse\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/wallets/reserve\x12\x97\x01\n" +
+	"\x11CommitReservation\x12#.wallet.v1.CommitReservationRequest\x1a$.wallet.v1.CommitReservationResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/api/v1/reservations/{reservation_id}/commit\x12\x97\x01\n" +
+	"\x11CancelReservation\x12#.wallet.v1.CancelReservationRequest\x1a$.wallet.v1.CancelReservationResponse\"7\x82\xd3\xe4\x93\x021:\x01*\",/api/v1/reservations/{reservation_id}/cancel\x12u\n" +
+	"\rCreditBalance\x12\x1f.wallet.v1.CreditBalanceRequest\x1a .wallet.v1.CreditBalanceResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/wallets/credit\x12\x9a\x01\n" +
+	"\x15GetTransactionHistory\x12'.wallet.v1.GetTransactionHistoryRequest\x1a(.wallet.v1.GetTransactionHistoryResponse\".\x82\xd3\xe4\x93\x02(\x12&/api/v1/wallets/{user_id}/transactionsB5Z3github.com/tam/tam-protos/gen/go/wallet/v1;walletv1b\x06proto3"
 
 var (
 	file_wallet_v1_wallet_service_proto_rawDescOnce sync.Once

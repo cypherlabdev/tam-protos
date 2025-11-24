@@ -12,3 +12,10 @@ plugins:
     opt:
       - paths=source_relative
       - require_unimplemented_servers=false
+
+  # gRPC-Gateway generation (REST API)
+  - plugin: grpc-gateway
+    out: gen/go
+    opt:
+      - paths=source_relative
+      - generate_unbound_methods=true
