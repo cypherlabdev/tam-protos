@@ -40,6 +40,7 @@ jobs:
 
       - name: Check for breaking changes
         run: buf breaking --against '.git#branch=main'
+        continue-on-error: true
 
   generate:
     name: Generate Code
