@@ -19,6 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	WalletService_CreateWallet_FullMethodName          = "/wallet.v1.WalletService/CreateWallet"
 	WalletService_GetBalance_FullMethodName            = "/wallet.v1.WalletService/GetBalance"
 	WalletService_ReserveBalance_FullMethodName        = "/wallet.v1.WalletService/ReserveBalance"
 	WalletService_CommitReservation_FullMethodName     = "/wallet.v1.WalletService/CommitReservation"
@@ -34,6 +35,9 @@ const (
 // WalletService manages user wallet balances, reservations, and transactions
 // CRITICAL: Handles real money - zero tolerance for data loss or inconsistency
 type WalletServiceClient interface {
+	// Create a new wallet for a user (called after email verification)
+	// Idempotent: returns existing wallet if user already has one
+	CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error)
 	// Get user balance information
 	GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error)
 	// Reserve balance for a bet (2PC-style reservation)
@@ -58,6 +62,16 @@ type walletServiceClient struct {
 
 func NewWalletServiceClient(cc grpc.ClientConnInterface) WalletServiceClient {
 	return &walletServiceClient{cc}
+}
+
+func (c *walletServiceClient) CreateWallet(ctx context.Context, in *CreateWalletRequest, opts ...grpc.CallOption) (*CreateWalletResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateWalletResponse)
+	err := c.cc.Invoke(ctx, WalletService_CreateWallet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *walletServiceClient) GetBalance(ctx context.Context, in *GetBalanceRequest, opts ...grpc.CallOption) (*GetBalanceResponse, error) {
@@ -127,6 +141,9 @@ func (c *walletServiceClient) GetTransactionHistory(ctx context.Context, in *Get
 // WalletService manages user wallet balances, reservations, and transactions
 // CRITICAL: Handles real money - zero tolerance for data loss or inconsistency
 type WalletServiceServer interface {
+	// Create a new wallet for a user (called after email verification)
+	// Idempotent: returns existing wallet if user already has one
+	CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error)
 	// Get user balance information
 	GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error)
 	// Reserve balance for a bet (2PC-style reservation)
@@ -152,6 +169,9 @@ type WalletServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedWalletServiceServer struct{}
 
+func (UnimplementedWalletServiceServer) CreateWallet(context.Context, *CreateWalletRequest) (*CreateWalletResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateWallet not implemented")
+}
 func (UnimplementedWalletServiceServer) GetBalance(context.Context, *GetBalanceRequest) (*GetBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetBalance not implemented")
 }
@@ -188,6 +208,24 @@ func RegisterWalletServiceServer(s grpc.ServiceRegistrar, srv WalletServiceServe
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&WalletService_ServiceDesc, srv)
+}
+
+func _WalletService_CreateWallet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateWalletRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(WalletServiceServer).CreateWallet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: WalletService_CreateWallet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(WalletServiceServer).CreateWallet(ctx, req.(*CreateWalletRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _WalletService_GetBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -305,6 +343,10 @@ var WalletService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "wallet.v1.WalletService",
 	HandlerType: (*WalletServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateWallet",
+			Handler:    _WalletService_CreateWallet_Handler,
+		},
 		{
 			MethodName: "GetBalance",
 			Handler:    _WalletService_GetBalance_Handler,
