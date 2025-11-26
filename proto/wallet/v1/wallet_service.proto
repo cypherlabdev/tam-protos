@@ -9,6 +9,15 @@ option go_package = "github.com/tam/tam-protos/gen/go/wallet/v1;walletv1";
 // WalletService manages user wallet balances, reservations, and transactions
 // CRITICAL: Handles real money - zero tolerance for data loss or inconsistency
 service WalletService {
+    // Create a new wallet for a user (called after email verification)
+    // Idempotent: returns existing wallet if user already has one
+    rpc CreateWallet(CreateWalletRequest) returns (CreateWalletResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/wallets"
+            body: "*"
+        };
+    }
+
     // Get user balance information
     rpc GetBalance(GetBalanceRequest) returns (GetBalanceResponse) {
         option (google.api.http) = {
@@ -58,6 +67,21 @@ service WalletService {
             get: "/api/v1/wallets/{user_id}/transactions"
         };
     }
+}
+
+// Request to create a new wallet for a user
+message CreateWalletRequest {
+    string user_id = 1;          // Firebase UID
+    string initial_balance = 2;  // Optional: Decimal as string (defaults to "0.00")
+    string currency = 3;         // Optional: defaults to "EUR"
+}
+
+// Response from wallet creation
+message CreateWalletResponse {
+    string wallet_id = 1;        // UUID of the created wallet
+    string user_id = 2;          // Firebase UID
+    string balance = 3;          // Decimal as string
+    string currency = 4;         // e.g., "EUR"
 }
 
 // Request to get user balance
